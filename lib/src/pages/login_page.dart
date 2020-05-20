@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lavile/src/blocs/login_bloc.dart';
+import 'package:lavile/src/blocs/provider.dart';
 
 class LoginPage extends StatelessWidget {
   
@@ -17,8 +19,9 @@ class LoginPage extends StatelessWidget {
   }
 
   Widget _loginForm( BuildContext context) {
-
+    final bloc = Provider.of(context);
     final _screenSize = MediaQuery.of(context).size;
+
     return SingleChildScrollView( 
       child: Column(  
         children: <Widget>[
@@ -48,9 +51,9 @@ class LoginPage extends StatelessWidget {
             child: Column(  
               children: <Widget>[
                 
-                _crearEmail(),
+                _crearEmail(bloc),
                 SizedBox(height: 30.0),
-                _crearPass(),
+                _crearPass(bloc),
                 SizedBox(height: 30.0),
                 _crearBoton(),
               ],
@@ -79,8 +82,10 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _crearEmail(){
-    return Container( 
+  Widget _crearEmail(LoginBloc bloc){
+
+
+    final email = Container( 
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
         keyboardType: TextInputType.emailAddress,
@@ -89,12 +94,23 @@ class LoginPage extends StatelessWidget {
           hintText: "ejemplo@correo.com",
           labelText: "Correo electrónico"
         ),
+        onChanged: bloc.changeEmail,
       ),
+    );
+
+
+    return StreamBuilder(
+      stream: bloc.emailStream ,
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return Container(
+          child: email,
+        );
+      },
     );
   }
 
-  Widget _crearPass(){
-    return Container( 
+  Widget _crearPass(LoginBloc bloc){
+    final pass = Container( 
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
         obscureText: true,
@@ -102,7 +118,17 @@ class LoginPage extends StatelessWidget {
           icon: Icon(Icons.lock_outline, color: Colors.brown),
           labelText: "Contraseña"
         ),
+        onChanged: bloc.changePassword,
       ),
+    );
+
+    return StreamBuilder(
+      stream: bloc.passwordStream ,
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return Container(
+          child: pass,
+        );
+      },
     );
   }
 
