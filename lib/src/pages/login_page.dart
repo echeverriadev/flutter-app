@@ -55,7 +55,7 @@ class LoginPage extends StatelessWidget {
                 SizedBox(height: 30.0),
                 _crearPass(bloc),
                 SizedBox(height: 30.0),
-                _crearBoton(),
+                _crearBoton(bloc),
               ],
             ),
           ),
@@ -66,69 +66,76 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _crearBoton(){
-    return RaisedButton( 
-      onPressed: () {},
-      shape: RoundedRectangleBorder(  
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-      elevation: 0.0,
-      color: Colors.brown,
-      textColor: Colors.white,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical:15.0), 
-        child: Text("Iniciar sesión"),
-      ),
+  Widget _crearBoton(LoginBloc bloc){
+    return StreamBuilder(
+      stream: bloc.fromValidStream ,
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return RaisedButton( 
+          onPressed: snapshot.hasData ? _login(bloc, context) : null ,
+          shape: RoundedRectangleBorder(  
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          elevation: 0.0,
+          color: Colors.brown,
+          textColor: Colors.white,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 80.0, vertical:15.0), 
+            child: Text("Iniciar sesión"),
+          ),
+        );
+      },
     );
   }
 
+  _login(LoginBloc bloc, BuildContext context){
+    print("================");
+    print("Email: ${ bloc.email }");
+    print("Password: ${ bloc.password }");
+    print("================");
+
+    Navigator.pushReplacementNamed( context, 'home');
+  }
+
   Widget _crearEmail(LoginBloc bloc){
-
-
-    final email = Container( 
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: TextField(
-        keyboardType: TextInputType.emailAddress,
-        decoration: InputDecoration(  
-          icon: Icon(Icons.alternate_email, color: Colors.brown),
-          hintText: "ejemplo@correo.com",
-          labelText: "Correo electrónico"
-        ),
-        onChanged: bloc.changeEmail,
-      ),
-    );
-
 
     return StreamBuilder(
       stream: bloc.emailStream ,
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return Container(
-          child: email,
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(  
+              icon: Icon(Icons.alternate_email, color: Colors.brown),
+              hintText: "ejemplo@correo.com",
+              labelText: "Correo electrónico",
+              errorText: snapshot.error,
+            ),
+            onChanged: bloc.changeEmail,
+          ),
         );
       },
     );
   }
 
   Widget _crearPass(LoginBloc bloc){
-    final pass = Container( 
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: TextField(
-        obscureText: true,
-        decoration: InputDecoration(  
-          icon: Icon(Icons.lock_outline, color: Colors.brown),
-          labelText: "Contraseña"
-        ),
-        onChanged: bloc.changePassword,
-      ),
-    );
-
+    
     return StreamBuilder(
       stream: bloc.passwordStream ,
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return Container(
-          child: pass,
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            obscureText: true,
+            decoration: InputDecoration(  
+              icon: Icon(Icons.lock_outline, color: Colors.brown),
+              labelText: "Contraseña",
+              errorText: snapshot.error,
+            ),
+          onChanged: bloc.changePassword,
+          )
         );
-      },
+      }
     );
   }
 
